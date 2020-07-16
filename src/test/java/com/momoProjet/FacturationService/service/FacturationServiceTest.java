@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
-class ComptesServiceTest {
-    private ComptesService comptesService;
+class FacturationServiceTest {
+    private FacturationService facturationService;
 
     @Mock
     private ComptesRepository comptesRepository;
@@ -38,7 +38,7 @@ class ComptesServiceTest {
     private ProprioFactureRepository proprioFactureRepository;
     @Test
     public void creerFactureRetourneRetourneBonFacture(){
-        comptesService =new ComptesService(comptesRepository,factureRepository,proprioFactureRepository);
+        facturationService =new FacturationService(comptesRepository,factureRepository,proprioFactureRepository);
         List<ProprioFacture> proprioFactures=new ArrayList<>();
         ProprioFacture proprioFacture1 =new ProprioFacture();
 
@@ -56,7 +56,7 @@ class ComptesServiceTest {
         when(proprioFactureRepository.findByEmail(any(String.class))).thenReturn(proprioFacture1);
         when(proprioFactureRepository.save(any(ProprioFacture.class))).thenReturn(null);
         when(factureRepository.save(any(Facture.class))).thenReturn(facture);
-        FactureDTO returnValue = comptesService.creerFacture(proprioFactures,facture,50);
+        FactureDTO returnValue = facturationService.creerFacture(proprioFactures,facture,50);
         assertEquals(50,facture.getMontant());
         assertTrue(proprioFacture1.getEmail().contentEquals(facture.getProprio().get(0).getEmail()));
         assertEquals(proprioFacture1.getComptes().getFactures().get(0).getMontant()
@@ -67,7 +67,7 @@ class ComptesServiceTest {
     }
     @Test
     public void creerFactureCompagnie() throws InvocationTargetException, IllegalAccessException {
-        comptesService =new ComptesService(comptesRepository,factureRepository,proprioFactureRepository);
+        facturationService =new FacturationService(comptesRepository,factureRepository,proprioFactureRepository);
         ProprioFacture proprioFacture1 =new ProprioFacture();
         ProprioFactureDTO proprioFactureDTO = new ProprioFactureDTO();
 
@@ -96,7 +96,7 @@ class ComptesServiceTest {
 
         when(proprioFactureRepository.findByEmail(any(String.class))).thenReturn(proprioFacture1);
         when(factureRepository.save(any(Facture_Compagnie.class))).thenReturn(facture);
-        Facture_CompagnieDTO returnValue = comptesService.creerFactureCompagnie(proprioFactureDTO,facture);
+        Facture_CompagnieDTO returnValue = facturationService.creerFactureCompagnie(proprioFactureDTO,facture);
         assertEquals(60,facture.getRevenu_net());
         assertEquals(100,facture.getRevenu_brut());
         assertEquals(60,facture.getComptes().get(0).getRevenuTotal());

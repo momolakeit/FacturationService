@@ -22,15 +22,15 @@ import java.util.List;
 
 
 @Service
-public class ComptesService {
-    private double pourcentageEmployes=0.4;
-    private ComptesRepository comptesRepository;
-    private FactureRepository factureRepository;
-    private ProprioFactureRepository proprioFactureRepository;
+public class FacturationService {
+    private final double pourcentageEmployes=0.4;
+    private final ComptesRepository comptesRepository;
+    private final FactureRepository factureRepository;
+    private final ProprioFactureRepository proprioFactureRepository;
     @Autowired
-    public ComptesService(ComptesRepository comptesRepository,
-                          FactureRepository factureRepository,
-                          ProprioFactureRepository proprioFactureRepository) {
+    public FacturationService(ComptesRepository comptesRepository,
+                              FactureRepository factureRepository,
+                              ProprioFactureRepository proprioFactureRepository) {
         this.comptesRepository = comptesRepository;
         this.factureRepository = factureRepository;
         this.proprioFactureRepository = proprioFactureRepository;
@@ -73,7 +73,7 @@ public class ComptesService {
         return retour;
     }
     public Facture_CompagnieDTO creerFactureCompagnie(ProprioFactureDTO proprioFactureDTO,
-                                                      Facture_Compagnie facture_compagnie) throws InvocationTargetException, IllegalAccessException {
+                                                      Facture_Compagnie facture_compagnie)  {
         ProprioFacture proprioFacture =proprioFactureRepository.findByEmail(proprioFactureDTO.getEmail());
         List <Facture> factures = proprioFacture.getFactures();
         Comptes comptes= proprioFacture.getComptes();
@@ -99,7 +99,7 @@ public class ComptesService {
         retour.setComptes(convertItem(new ArrayList<ComptesDTO>(),ComptesToComptesDTO.instance,facture_compagnie.getComptes()));
         return  retour;
     }
-    public FactureDTO modiferFacture (Facture factureDTO) throws InvocationTargetException, IllegalAccessException {
+    public FactureDTO modiferFacture (FactureDTO factureDTO) {
         Facture facture= (Facture) factureRepository.findById(factureDTO.getId()).get();
         FactureDTO dto =FactureToFactureDTO.instance.convert(facture);
         dto.setProprio(convertItem(new ArrayList<>(),
