@@ -129,18 +129,23 @@ public class FacturationService {
     }
     public FactureDTO modiferFacture (FactureDTO factureDTO) {
         Facture facture= (Facture) factureRepository.findById(factureDTO.getId()).get();
-        FactureDTO dto =FactureToFactureDTO.instance.convert(facture);
-        dto.setProprio(convertItem(new ArrayList<>(),
-                        ProprioFactureToProprioFactureDTO.instance,
-                        facture.getProprio()));
+        if (Objects.nonNull(facture)){
+            facture = FactureDTOtoFacture.instance.convert(factureDTO);
+            facture.setProprio(convertItem(new ArrayList<>(),ProprioFactureDTOToProprioFacture.instance,factureDTO.getProprio()));
+            facture.setComptes(convertItem(new ArrayList<>(),ComptesDTOToComptes.instance,factureDTO.getComptes()));
+            facture.setFactureAssocie(Facture_CompagnieDTOToFacture_Compagnie.instance.convert(factureDTO.getFacture_compagnie()));
+        }
         factureRepository.save(facture);
-        return dto;
+        return factureDTO;
     }
 
     private <T,Q> List<T> convertItem(List<T> arrayList, MapperInterface converter,List<Q> objToConvert){
-        for(Q x:objToConvert){
-            arrayList.add((T)converter.convert(x));
+        if(Objects.nonNull(objToConvert)){
+            for(Q x:objToConvert){
+                arrayList.add((T)converter.convert(x));
+            }
         }
+
         return arrayList;
     }
     private <T> List<T> addItem(List<T> list,T item){

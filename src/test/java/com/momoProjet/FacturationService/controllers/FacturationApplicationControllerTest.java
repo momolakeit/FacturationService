@@ -31,7 +31,7 @@ class FacturationApplicationControllerTest {
 
     @Test
     public void createFactureReturnFacture() throws Exception {
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(facturationApplicationController).build();
+        MockMvc mvc = initMockMvc();
         LinkedMultiValueMap <String,String> requestParams = new LinkedMultiValueMap<>();
         JSONObject sendObj = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -55,7 +55,7 @@ class FacturationApplicationControllerTest {
     }
     @Test
     public void findFactureById() throws Exception {
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(facturationApplicationController).build();
+        MockMvc mvc = initMockMvc();
 
         MvcResult result =mvc.perform(MockMvcRequestBuilders.get("/findFactureById").content("5").
                                                 contentType(MediaType.APPLICATION_JSON).
@@ -63,5 +63,22 @@ class FacturationApplicationControllerTest {
         String s =result.getResponse().getContentAsString();
         JSONObject returnVal = new JSONObject(result.getResponse().getContentAsString());
         assertEquals(100.0,returnVal.get("montant"));
+    }
+    @Test
+    public void updateFactureById() throws Exception {
+        MockMvc mockMvc = initMockMvc();
+        JSONObject factureModifié =new JSONObject();
+        factureModifié.put("id","5");
+        factureModifié.put("montant","9999");
+        MvcResult result =mockMvc.perform(MockMvcRequestBuilders.put(   "/modifierFacture").
+                                                                content(factureModifié.toString()).
+                                                                contentType(MediaType.APPLICATION_JSON).
+                                                                accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).
+                                                                    andReturn();
+        JSONObject returnValue = new JSONObject(result.getResponse().getContentAsString());
+        assertEquals(9999.00,returnValue.get("montant"));
+    }
+    private MockMvc initMockMvc(){
+        return MockMvcBuilders.standaloneSetup(facturationApplicationController).build();
     }
 }

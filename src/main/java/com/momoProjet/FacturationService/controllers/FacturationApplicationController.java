@@ -46,7 +46,7 @@ public class FacturationApplicationController {
 
     @RequestMapping(path = "/modifierFacture",method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity<?> modifierFacture(FactureDTO factureDTO){
+    public ResponseEntity<?> modifierFacture(@RequestBody  FactureDTO factureDTO){
         return  ResponseEntity.ok(facturationService.modiferFacture(factureDTO));
     }
 
