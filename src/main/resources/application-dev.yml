@@ -1,0 +1,13 @@
+
+security:
+  oauth2:
+    client:
+      client-id: fekoumbrek
+      client-secret: fekoumbrek@123
+    resource:
+      token-info-uri: http://localhost:8080/oauth/check_token
+config:
+  securite:
+    active: true
+server:
+  port: 8085

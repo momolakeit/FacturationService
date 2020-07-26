@@ -6,6 +6,7 @@ import java.util.List;
 @Entity
 public class ProprioFacture {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column
     private long id;
     @Column

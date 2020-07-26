@@ -6,6 +6,8 @@ import java.util.List;
 @Entity
 public class Comptes {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column
     private long id;
     @Column
     private double revenuTotal;

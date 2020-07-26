@@ -15,13 +15,16 @@ import com.momoProjet.FacturationService.repositories.ProprioFactureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
+@Transactional
 public class FacturationService {
     private final double pourcentageEmployes=0.4;
     private final ComptesRepository comptesRepository;
@@ -45,6 +48,15 @@ public class FacturationService {
 
         return comptesDTO;
     }
+    public FactureDTO findFactureById(Long id){
+        Facture facture = (Facture) factureRepository.findById(id).get();
+        FactureDTO factureDTO = FactureToFactureDTO.instance.convert(facture);
+        factureDTO.setFacture_compagnie(Facture_CompagnieToFacture_CompagnieDTO.instance.convert((Facture_Compagnie) facture.getFactureAssocie()));
+        factureDTO.setProprio(convertItem(new ArrayList<>(),ProprioFactureToProprioFactureDTO.instance,facture.getProprio()));
+        factureDTO.setComptes(convertItem(new ArrayList<>(),ComptesToComptesDTO.instance,facture.getComptes()));
+
+        return factureDTO;
+    }
     public FactureDTO creerFacture(List<ProprioFacture> proprioFactureDTOList,Facture facture,double montant){
         facture.setTaux_imposition(0.15);
         facture.setComptes(new ArrayList<>());
@@ -52,23 +64,39 @@ public class FacturationService {
         facture.setMontant(montant);
         for(ProprioFacture proprioFactureDTO:proprioFactureDTOList){
             ProprioFacture proprioFacture =proprioFactureRepository.findByEmail(proprioFactureDTO.getEmail());
+
             facture.getProprio().add(proprioFacture);
             facture.getComptes().add(proprioFacture.getComptes());
+
             Comptes comptes =proprioFacture.getComptes();
             comptes.setRevenuTotal(comptes.getRevenuTotal()+facture.getMontant());
-            comptes.setFactures(addItem(new ArrayList<>(),facture));
 
-            proprioFacture.setFactures(addItem(new ArrayList<>(),facture));
-
-            comptesRepository.save(comptes);
+            proprioFacture =proprioFactureRepository.save(proprioFacture);
+            comptes =comptesRepository.save(comptes);
+            if(Objects.nonNull(comptes.getFactures())){
+                comptes.getFactures().add(facture);
+            }
+            else{
+                comptes.setFactures(addItem(new ArrayList<>(),facture));
+            }
+            if(Objects.nonNull(proprioFacture.getFactures())){
+                proprioFacture.getFactures().add(facture);
+            }
+            else{
+                proprioFacture.setFactures(addItem(new ArrayList<>(),facture));
+            }
+            factureRepository.save(facture);
             proprioFactureRepository.save(proprioFacture);
+            comptesRepository.save(comptes);
+
 
         }
         FactureDTO retour = new FactureDTO();
+        retour =FactureToFactureDTO.instance.convert(facture);
         retour.setComptes(convertItem(new ArrayList<>(),ComptesToComptesDTO.instance,facture.getComptes()));
 
         retour.setProprio(convertItem(new ArrayList<>(),ProprioFactureToProprioFactureDTO.instance,facture.getProprio()));
-        factureRepository.save(facture);
+
 
         return retour;
     }
