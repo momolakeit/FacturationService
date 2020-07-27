@@ -103,21 +103,23 @@ public class FacturationService {
     public Facture_CompagnieDTO creerFactureCompagnie(ProprioFactureDTO proprioFactureDTO,
                                                       Facture_Compagnie facture_compagnie)  {
         ProprioFacture proprioFacture =proprioFactureRepository.findByEmail(proprioFactureDTO.getEmail());
-        List <Facture> factures = proprioFacture.getFactures();
+
         Comptes comptes= proprioFacture.getComptes();
         double revenuBrut=0;
-        for(Facture facture: factures){
+        List<Facture> facturesList = new ArrayList<>();
+        for(Facture facture:  proprioFacture.getFactures()){
             revenuBrut= revenuBrut+facture.getMontant();
+            facturesList.add(facture);
         }
         facture_compagnie.setRevenu_brut(revenuBrut);
         double paieEmployes=revenuBrut*pourcentageEmployes;
         comptes.setRevenuTotal(comptes.getRevenuTotal()-paieEmployes);
         facture_compagnie.setPaie_employes(paieEmployes);
         facture_compagnie.setRevenu_net(revenuBrut-paieEmployes);
-        facture_compagnie.setFactureAssocie(factures);
-        facture_compagnie.setComptes(addItem(new ArrayList<>(),comptes));
+        facture_compagnie.setFactureAssocie(facturesList);
+        facture_compagnie.setComptes(addItem(new ArrayList<>(),proprioFacture.getComptes()));
         facture_compagnie.setProprio(addItem(new ArrayList<>(),proprioFacture));
-        factureRepository.save(facture_compagnie);
+        facture_compagnie =(Facture_Compagnie) factureRepository.save(facture_compagnie);
         Facture_CompagnieDTO retour = Facture_CompagnieToFacture_CompagnieDTO.instance.convert(facture_compagnie);
 
         retour.setProprio(convertItem(  new ArrayList<ProprioFactureDTO>(),

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class ApplicationRunner implements CommandLineRunner {
     @Autowired
@@ -44,7 +46,18 @@ public class ApplicationRunner implements CommandLineRunner {
         comptesRepository.save(comptes2);
         Facture facture = new Facture();
         facture.setMontant(100);
-        facture= (Facture) factureRepository.save(facture);
-        String s;
+        facture.setProprio(new ArrayList<>());
+        facture.getProprio().add(proprioFacture);
+        proprioFacture.setFactures(new ArrayList<>());
+        proprioFacture.getFactures().add(facture);
+        Facture facture2 = new Facture();
+        facture2.setMontant(30);
+        facture2.setProprio(new ArrayList<>());
+        facture2.getProprio().add(proprioFacture);
+        proprioFacture.getFactures().add(facture2);
+
+        factureRepository.save(facture);
+        factureRepository.save(facture2);
+        proprioFactureRepository.save(proprioFacture);
     }
 }

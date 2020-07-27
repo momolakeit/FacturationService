@@ -69,14 +69,34 @@ class FacturationApplicationControllerTest {
         MockMvc mockMvc = initMockMvc();
         JSONObject factureModifié =new JSONObject();
         factureModifié.put("id","5");
-        factureModifié.put("montant","9999");
+        factureModifié.put("montant","99999");
         MvcResult result =mockMvc.perform(MockMvcRequestBuilders.put(   "/modifierFacture").
                                                                 content(factureModifié.toString()).
                                                                 contentType(MediaType.APPLICATION_JSON).
                                                                 accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).
                                                                     andReturn();
         JSONObject returnValue = new JSONObject(result.getResponse().getContentAsString());
-        assertEquals(9999.00,returnValue.get("montant"));
+        assertEquals(99999.00,returnValue.get("montant"));
+    }
+    @Test
+    public void creerFactureCompagnie() throws Exception {
+        MockMvc mockMvc = initMockMvc();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("email","proprio1@gmail.com");
+        MvcResult result ;
+                mockMvc.perform(MockMvcRequestBuilders.post(  "/creerFacture_Compagnie").
+                                                                content(jsonObject.toString()).
+                                                                contentType(MediaType.APPLICATION_JSON).
+                                                                accept(MediaType.APPLICATION_JSON)).
+                                                                andExpect(status().isOk()).
+                                                                andReturn();
+
+        /*JSONObject returnValue = new JSONObject(result.getResponse().getContentAsString());
+        assertEquals(130.0,returnValue.get("revenu_brut"));
+        assertEquals(78.0,returnValue.get("revenu_net"));
+        assertEquals(52.0,returnValue.get("paie_employes"));*/
+
+
     }
     private MockMvc initMockMvc(){
         return MockMvcBuilders.standaloneSetup(facturationApplicationController).build();

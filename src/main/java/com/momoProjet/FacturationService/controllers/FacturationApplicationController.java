@@ -34,7 +34,7 @@ public class FacturationApplicationController {
 
     @RequestMapping(path = "/creerFacture_Compagnie", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> creerFactureCompagmie(ProprioFactureDTO proprioFactureDTO){
+    public ResponseEntity<?> creerFactureCompagmie(@RequestBody ProprioFactureDTO proprioFactureDTO){
         return ResponseEntity.ok(facturationService.creerFactureCompagnie(proprioFactureDTO,new Facture_Compagnie()));
     }
 
